@@ -57,6 +57,8 @@ func main() {
 
 	//Configure functions
 	mux.HandleFunc("/", dbh.RenderIndex)
+	mux.HandleFunc("/new", dbh.RenderNew)
+	mux.HandleFunc("/edit", dbh.RenderEdit)
 	mux.HandleFunc("/album/{id}", dbh.DeleteAlbumByID).Methods("Delete")
 
 	//Deal with CORS

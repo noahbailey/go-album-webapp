@@ -1,0 +1,5 @@
+#the build artifiact - should not be committed 
+go-album-webapp
+
+#the database file
+albums.db

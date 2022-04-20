@@ -28,20 +28,19 @@
                 <td>{{ .Title }}</td>
                 <td>{{ .Artist }}</td>
                 <td>{{ .Price }}</td>
+                <td>
+                    <form action="/edit">
+                    <input type="hidden" name="id" value="{{ .ID }}">
+                    <input type="submit" class="btn btn-warning" value="Edit" method="GET">
+                    </input>
+                    </form>
+                </td>
                 <td><button type="button" class='btn btn-danger' onclick="deleteData({{ .ID}})">Delete</button></td>
             </tr>
             {{ end }}
         </table>
-        <div id="newAlbForm" class="form-group"></div>
-        <form method="POST">
-            <label>Title:</label><br/>
-            <input type="text" name="title"><br />
-            <label>Artist:</label><br/>
-            <input type="text" name="artist"><br />
-            <label>Price</label><br/>
-            <input type="number" name="price"><br/>
-            <button class="btn btn-success">Submit</button><br>
-        </form>
+        <br>
+        <a href="/new" class="btn btn-success">Add New Album</a>
         </div>
     </div>
     </body>
