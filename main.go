@@ -2,13 +2,14 @@ package main
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+
+	database "go-album-webapp/database"
 
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -32,7 +33,7 @@ func main() {
 
 	//Check if the data file needs to be created
 	log.Printf("Checking if file %v exists", filename)
-	fileStatus, err := checkDataFile(filename)
+	fileStatus, err := database.CheckDataFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,13 +48,13 @@ func main() {
 	}
 
 	//connect to the sqlite database
-	db, err := initDB(filename)
+	db, err := database.InitDB(filename)
 	if err != nil {
 		log.Fatal("Could not initialize database")
 	}
 
 	//Set up the database tables & structures
-	createTable(db)
+	database.CreateTable(db)
 
 	// hand off data control to the database handler
 	dbh := dbHandler{db: db}
@@ -76,49 +77,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8000", handler))
 }
 
-// Data file management for sqlite3 file:
-
-// Check if the file exists. Do not create it
-func checkDataFile(filename string) (bool, error) {
-	_, err := os.Stat(filename)
-	if err == nil {
-		return true, nil
-	}
-	if errors.Is(err, os.ErrNotExist) {
-		return false, nil
-	}
-	return false, err
-}
-
-// Create the database connection
-func initDB(filename string) (*sql.DB, error) {
-	//open DB connection
-	db, err := sql.Open("sqlite3", filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return db, err
-}
-
-//Create the table if needed
-func createTable(db *sql.DB) {
-	tbl := `
-	CREATE TABLE IF NOT EXISTS album(
-		ID INTEGER PRIMARY KEY AUTOINCREMENT,
-		Title TEXT NOT NULL,
-		Artist TEXT NOT NULL,
-		Price FLOAT
-	);`
-
-	log.Println("Creating table...")
-	statement, err := db.Prepare(tbl)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	statement.Exec()
-	log.Println("Created table successfully.")
-}
-
+// Render the index page:
 func (dbh dbHandler) renderIndex(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		price, err := strconv.ParseFloat(r.FormValue("price"), 64)

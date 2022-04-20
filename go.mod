@@ -1,4 +1,4 @@
-module github.com/noahbailey/go-album-webapp
+module go-album-webapp
 
 go 1.15
 
